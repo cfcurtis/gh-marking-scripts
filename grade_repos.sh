@@ -8,14 +8,25 @@ if [[ "$#" -gt 1 ]]; then
 	START=$2
 fi
 
+read -p "What is the assignment deadline? (format 2021-01-01) " deadline
+
 for repo in */; do
 	COUNTER=$[$COUNTER + 1]
 	if [ $COUNTER -ge $START ]; then
 		echo "$COUNTER: $repo"
 		cd $repo
 
-		# view the feedback pr on the web interface
-		gh pr view 1 --web
+		# get the hash associated with the deadline (up to midnight)
+		sha_deadline=`git log --until="$deadline 23:59" --format=format:%H -1`
+
+		# and the initial commit
+		sha_init=`git rev-list HEAD | tail -n 1`
+
+		# and the base URL without the .git part
+		url=`git config --get remote.origin.url`
+		
+		# compare the code at the deadline to the initial commit
+		start "${url%.*}/compare/$sha_init...$sha_deadline"
 
 		# Open the text file for feedback
 		code -w feedback.txt
