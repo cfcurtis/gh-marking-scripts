@@ -8,7 +8,7 @@ if [[ "$#" -gt 1 ]]; then
 	START=$2
 fi
 
-read -p "What is the assignment deadline? (format 2021-01-01) " deadline
+read -p "What is the assignment deadline? (format yyyy-mm-dd) " deadline
 
 for repo in */; do
 	COUNTER=$[$COUNTER + 1]
