@@ -9,7 +9,7 @@ for repo in */; do
     cd $repo
 
     # comment on the feedback from the feedback file
-    gh pr comment 1 -F feedback.txt
+    gh pr comment 1 -F feedback.md
     cd ..
 done
 	

@@ -29,7 +29,7 @@ for repo in */; do
 		start "${url%.*}/compare/$sha_init...$sha_deadline"
 
 		# Open the text file for feedback
-		code -w feedback.txt
+		code -w feedback.md
 		
 		cd ..
 
