@@ -32,6 +32,10 @@ if __name__ == '__main__':
     if a_title not in bb_grades.columns:
         bb_grades[a_title] = None
  
+    # count how many left to do
+    total_grades = len(bb_grades[a_title])
+    completed = bb_grades[a_title].count()
+
     # Start looping through student repos in random order
     repos = [f for f in os.listdir(basefolder)]
 
@@ -87,13 +91,14 @@ if __name__ == '__main__':
         # Show autograde points, then open up a feedback file and wait for input
         print('Autograde points for ' + repo + ': ' + str(autograde_row.points_awarded))
         subprocess.call(['code','feedback.md'],shell=True)
-        grade = input('Enter the grade for ' + a_title + ': ')
+        grade = input(f'Enter the grade for {repo} {a_title} ({completed}/{total_grades}): ')
+        completed += 1
 
         # go back to the working directory so file paths work
         os.chdir(cwd)
 
         # store it in the blackboard grade row and save it
         bb_grades.loc[bb_grades['roster_name'] == autograde_row.roster_identifier,a_title] = grade
-        bb_grades.to_csv(bb_grades_f,sep='\t',encoding='UTF-16')
+        bb_grades.to_csv(bb_grades_f,sep='\t', encoding='UTF-16', index=False)
 
         input('Press any key to continue, or Ctrl+C to quit')
