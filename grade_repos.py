@@ -101,4 +101,5 @@ if __name__ == '__main__':
         bb_grades.loc[bb_grades['roster_name'] == autograde_row.roster_identifier,a_title] = grade
         bb_grades.to_csv(bb_grades_f,sep='\t', encoding='UTF-16', index=False)
 
-        input('Press any key to continue, or Ctrl+C to quit')
+        if input('Press Q to quit, or anything else to continue') == "Q":
+            break
