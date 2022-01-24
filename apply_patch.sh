@@ -5,8 +5,11 @@
 cd $1
 COUNTER=0
 
-read -p "Enter the repo prefix (org/prefix): " prefix
-read -p "Enter the commit message: " message
+read -p "Do you want to commit the patch? (y/n): " commit
+
+if [[ $commit == "y" ]]; then
+    read -p "Enter the commit message: " message
+fi
 
 for repo in */; do
 	COUNTER=$[$COUNTER + 1]
@@ -14,14 +17,14 @@ for repo in */; do
     cd $repo
 
     # apply the patch file specified in $2
-    git apply $2
-    git add .
-    git commit -m "$message"
+    git apply --reject --whitespace=fix $2
 
-    # update the remote with the repo name
-    git remote set-url origin "https://github.com/$prefix-$repo"
-    git pull
-    git push
+    if [[ $commit == "y" ]]; then
+        git add .
+        git commit -m "$message"
+        git pull
+        git push
+    fi
     cd ..
 done
 	
