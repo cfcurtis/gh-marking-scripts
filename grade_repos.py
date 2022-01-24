@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from datetime import datetime
 from numpy import isnan
 import pandas as pd
@@ -8,11 +10,17 @@ import subprocess
 
 if __name__ == '__main__':
     if (len(sys.argv) < 4):
-        print("Usage: grade_repos basefolder autogrades.csv blackboardgrades.csv")
+        print("Usage: grade_repos basefolder autogrades.csv blackboardgrades.csv [rubric.md]")
+        sys.exit()
     
     basefolder = sys.argv[1]
     autogrades_f = sys.argv[2]
     bb_grades_f = sys.argv[3]
+
+    if len(sys.argv) > 4:
+        rubric_f = os.path.abspath(sys.argv[4])
+    else:
+        rubric_f = None
  
     # Try to open the two csvs
     autogrades = pd.read_csv(autogrades_f)
@@ -27,7 +35,7 @@ if __name__ == '__main__':
 
     # get some options
     randomize = input('Do you want to randomize? Y/N: ')
-    first_commit = input('Do you want to see the student''s first commit? Y/N: ')
+    show_commits = input('Do you want to see the student''s commits? Y/N: ')
 
     if a_title not in bb_grades.columns:
         bb_grades[a_title] = None
@@ -62,6 +70,11 @@ if __name__ == '__main__':
 
         os.chdir(fullpath)
         
+        if rubric_f is not None:
+            feedback = 'feedback.md'
+            print(f'Copying {rubric_f} to {feedback}')
+            subprocess.call(['cp', rubric_f, feedback])
+        
         # get the base URL without the .git part
         url = subprocess.check_output(['git', 'config', '--get', 'remote.origin.url'], universal_newlines=True).strip()
         url = url.replace('.git','')
@@ -82,15 +95,17 @@ if __name__ == '__main__':
             subprocess.call(['start', url + '/compare/' + sha_init + '...' + 'sha_deadline'],shell=True)
         
         # show the first commit if requested
-        if first_commit.lower() == 'y':
-            git_log = subprocess.Popen('git rev-list --reverse --pretty --invert-grep ' +
-                '--author="\(classroom\)\|\(Charlotte\)" HEAD', 
-                stdout=subprocess.PIPE, shell=True)
-            subprocess.call(['head','-n','5'],stdin=git_log.stdout, universal_newlines=True)
+        if show_commits.lower() == 'y':
+            subprocess.call('git rev-list --reverse --pretty --invert-grep ' +
+                '--author="\(classroom\)\|\(Charlotte\)" --all')
+            # git_log = subprocess.Popen('git rev-list --reverse --pretty --invert-grep ' +
+            #     '--author="\(classroom\)\|\(Charlotte\)" HEAD', 
+            #     stdout=subprocess.PIPE, shell=True)
+            # subprocess.call(['head','-n','5'],stdin=git_log.stdout, universal_newlines=True)
 
         # Show autograde points, then open up a feedback file and wait for input
         print('Autograde points for ' + repo + ': ' + str(autograde_row.points_awarded))
-        subprocess.call(['code','feedback.md'],shell=True)
+        subprocess.call(['code','--reuse-window','feedback.md'],shell=True)
         grade = input(f'Enter the grade for {repo} {a_title} ({completed}/{total_grades}): ')
         completed += 1
 
@@ -101,5 +116,5 @@ if __name__ == '__main__':
         bb_grades.loc[bb_grades['roster_name'] == autograde_row.roster_identifier,a_title] = grade
         bb_grades.to_csv(bb_grades_f,sep='\t', encoding='UTF-16', index=False)
 
-        if input('Press Q to quit, or anything else to continue') == "Q":
+        if input('Press Q to quit, or anything else to continue: ') == "Q":
             break
