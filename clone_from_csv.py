@@ -23,7 +23,10 @@ def clone_repos(data, dest_dir):
     Renames to roster identifier with no spaces.
     """
     for row in data:
-        dest_name = row["roster_identifier"].replace(" ", "")
+        # Rename folders with last name first, because D2L doesn't know how to sort properly
+        student_names = row["roster_identifier"].split()
+        dest_name = "".join([student_names[-1]] + student_names[:-1])
+        print(dest_name)
         subprocess.call(["git", "clone", row["student_repository_url"], str(Path(dest_dir) / dest_name)])
 
 
