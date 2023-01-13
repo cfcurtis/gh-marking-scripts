@@ -1,10 +1,11 @@
 #!/usr/bin/bash
 
-# Usage: clone_and_anon org prefix filter1 filter2 ... filterN
-# Clones all the repos from org matching the filter(s). 
-# Creates folder named prefix, renames repos as prefix-number,
-# then deletes .git directory to remove identifying information.
-# This does not anonymize any student names/IDs on text files within the repo.
+# Clones all the repos from org matching the filter(s)t
+
+if [ $# -lt 3 ]; then
+    echo "Usage: $0 org prefix filter1 filter2 ... filterN"
+    exit 1
+fi
 
 org=$1
 prefix=$2
@@ -27,13 +28,10 @@ else
     cd $prefix
 fi
 
-counter=0
 eval $cmd | while read -r repo _; do
     if [[ $dryrun == 1 ]]; then
         echo "would clone $repo"
     else
-        gh repo clone $repo "$prefix-$counter"
-        rm -rf "$prefix-$counter/.git"
-        counter=$[$counter + 1]
+        gh repo clone $repo
     fi
 done
