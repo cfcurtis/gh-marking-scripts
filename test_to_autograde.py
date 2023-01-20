@@ -49,7 +49,7 @@ def parse_pytests(tests):
             {
                 "setup": "sudo -H pip3 install pytest",
                 "description": test_func,
-                "command": f"pytest{test_file}::{test_func}",
+                "command": f"pytest {test_file}::{test_func}",
             }
         )
 
