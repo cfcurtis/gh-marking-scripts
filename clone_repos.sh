@@ -3,12 +3,12 @@
 # Clones all the repos from org matching the filter(s)t
 
 if [ $# -lt 3 ]; then
-    echo "Usage: $0 org prefix filter1 filter2 ... filterN"
+    echo "Usage: $0 org dest_folder filter1 filter2 ... filterN"
     exit 1
 fi
 
 org=$1
-prefix=$2
+dest_folder=$2
 args=("${@:3}")
 dryrun=0
 
@@ -24,8 +24,8 @@ done
 if [[ $dryrun == 1 ]]; then
     echo "Dry run, just listing repos"
 else
-    mkdir $prefix
-    cd $prefix
+    mkdir $dest_folder
+    cd $dest_folder
 fi
 
 eval $cmd | while read -r repo _; do
