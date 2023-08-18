@@ -5,7 +5,15 @@ from pathlib import Path
 # Points needed to pass each lab
 PASSING_POINTS = {
     1: 1,
-    2: 2
+    2: 2,
+    3: 2,
+    4: 3,
+    5: 2,
+    6: 3,
+    7: 3,
+    8: 1,
+    9: 3,
+    10: 3
 }
 
 def update_grades(d2l_csv: pd.DataFrame, github_csv_folder: Path) -> pd.DataFrame:
@@ -30,7 +38,7 @@ def update_grades(d2l_csv: pd.DataFrame, github_csv_folder: Path) -> pd.DataFram
         # Merge the lab data into the d2l_csv and add to the lab total column
         d2l_csv = d2l_csv.merge(this_lab, on="roster_identifier", how="left")
         d2l_csv[lab_col] += d2l_csv[f"lab{lab_num}"].fillna(0)
-        d2l_csv.drop(columns=[f"lab{lab_num}"], inplace=True)
+        # d2l_csv.drop(columns=[f"lab{lab_num}"], inplace=True)
         n_labs += 1
 
     # Update the total number of labs (MaxPoints) - not sure if D2L parses this
