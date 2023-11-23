@@ -4,6 +4,12 @@ from pathlib import Path
 import yaml
 import subprocess
 
+def update_overrides(d2l_csv: pd.DataFrame, params: dict, lab_col: str):
+    """
+    Performs any manual adjustments defined in params.
+    """
+    for username, val in params["overrides"].items():
+        d2l_csv.loc[d2l_csv["roster_identifier"] == username, lab_col] += val
 
 def update_grades(
     d2l_csv: pd.DataFrame, github_csv_folder: Path, params: dict
@@ -35,6 +41,7 @@ def update_grades(
         d2l_csv.drop(columns=[f"lab{lab_num}"], inplace=True)
         n_labs += 1
 
+    update_overrides(d2l_csv, params, lab_col)
     d2l_csv.drop(columns=["roster_identifier"], inplace=True)
 
     return d2l_csv
